@@ -15,6 +15,8 @@ import { lists } from './schema'
 import { withAuth, session } from './auth'
 import { cloudinaryImage } from '@keystone-6/cloudinary'
 
+const baseUrl = 'http://localhost:3000';
+
 export default withAuth(
   config({
     db: {
@@ -30,6 +32,24 @@ export default withAuth(
       enableLogging: true,
       idField: { kind: 'uuid' },
       shadowDatabaseUrl: 'postgres://postgres:pgpwd4test@localhost:5432/shadowdb'
+    },
+    storage: {
+      my_local_images: {
+          // Images that use this store will be stored on the local machine
+          kind: 'local',
+          // This store is used for the image field type
+          type: 'image',
+          // The URL that is returned in the Keystone GraphQL API
+          generateUrl: path => `${baseUrl}/uploads${path}`,
+          // The route that will be created in Keystone's backend to serve the images
+          serverRoute: {
+              path: '/uploads',
+          },
+          // Set serverRoute to null if you don't want a route to be created in Keystone
+          // serverRoute: null
+          storagePath: 'public/uploads',
+      },
+      /** more storage */
     },
     lists,
     ui: {
